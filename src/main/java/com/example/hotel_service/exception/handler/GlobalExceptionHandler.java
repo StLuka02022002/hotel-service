@@ -25,9 +25,8 @@ public class GlobalExceptionHandler {
         errors.put("status", HttpStatus.BAD_REQUEST.value());
 
         Map<String, String> validationErrors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            validationErrors.put(error.getField(), error.getDefaultMessage());
-        });
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error -> validationErrors.put(error.getField(), error.getDefaultMessage()));
         //TODO Перенести в лог
         ex.printStackTrace();
         errors.put("errors", validationErrors);
