@@ -1,8 +1,8 @@
 package com.example.hotel_service.mapper;
 
-import com.example.hotel_service.dao.request.UserRequest;
-import com.example.hotel_service.dao.responce.UserResponse;
-import com.example.hotel_service.dao.responce.UserResponseEdit;
+import com.example.hotel_service.dto.request.UserRequest;
+import com.example.hotel_service.dto.responce.UserResponse;
+import com.example.hotel_service.dto.responce.UserResponseEdit;
 import com.example.hotel_service.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

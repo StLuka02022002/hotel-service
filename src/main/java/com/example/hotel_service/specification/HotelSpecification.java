@@ -10,6 +10,19 @@ import java.util.UUID;
 
 public class HotelSpecification {
 
+    public static Specification<Hotel> createSpecification(String id, String name, String title, String address,
+                                                           Double distanceFromCenter, Double minRating, Integer minEstimationCount) {
+        UUID uuid = id == null ? null : UUID.fromString(id);
+        return Specification.where(HotelSpecification.hasId(uuid))
+                .and(HotelSpecification.hasName(name))
+                .and(HotelSpecification.hasTitle(title))
+                .and(HotelSpecification.hasAddress(address))
+                .and(HotelSpecification.hasDistanceFromCenter(distanceFromCenter))
+                .and(HotelSpecification.hasMinRating(minRating))
+                .and(HotelSpecification.hasMinEstimationCount(minEstimationCount));
+
+    }
+
     public static Specification<Hotel> hasId(UUID id) {
         return (root, query, criteriaBuilder) ->
                 id == null ? null : criteriaBuilder.equal(root.get("id"), id);
@@ -36,16 +49,16 @@ public class HotelSpecification {
                 }
                 String search = "%" + searchWord + "%";
                 predicates.add(criteriaBuilder.or(
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("city").get("name")), search),
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("city").get("country")), search),
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("address").get("district")), search),
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("address").get("street")), search),
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("address").get("postalCode")), search),
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("address").get("apartment")), search)
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("country")), search),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("city")), search),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("district")), search),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("street")), search),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("postalCode")), search),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("apartment")), search)
                 ));
 
                 if (searchWord.matches("\\d+")) {
-                    predicates.add(criteriaBuilder.equal(root.get("address").get("buildingNumber"), Integer.parseInt(searchWord)));
+                    predicates.add(criteriaBuilder.equal(root.get("buildingNumber"), Integer.parseInt(searchWord)));
                 }
             }
             return criteriaBuilder.or(predicates.toArray(new Predicate[0]));

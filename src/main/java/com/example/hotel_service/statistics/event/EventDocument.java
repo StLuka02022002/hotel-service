@@ -23,7 +23,7 @@ public class EventDocument {
     private String eventType;
 
     @Field("event")
-    private Event event;
+    private Object event;
 
     @CreatedDate
     private LocalDateTime timestamp;

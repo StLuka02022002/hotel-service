@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="create-hotel-table" author="skillbox">
+        <createTable tableName="hotels">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="title" type="VARCHAR(60)"/>
+            <column name="country" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="city" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="district" type="VARCHAR(100)"/>
+            <column name="street" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="postal_code" type="VARCHAR(15)"/>
+            <column name="building_number" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="floor" type="INT"/>
+            <column name="apartment" type="VARCHAR(20)"/>
+            <column name="distance_from_center" type="DOUBLE"/>
+            <column name="rating" type="DOUBLE"/>
+            <column name="estimation_count" type="INT"/>
+            <column name="created_time" type="TIMESTAMP"/>
+            <column name="updated_time" type="TIMESTAMP"/>
+        </createTable>
+
+        <createIndex indexName="hotel_name_index" tableName="hotels">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

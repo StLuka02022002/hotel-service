@@ -4,7 +4,6 @@ import com.example.hotel_service.service.StatisticsService;
 import com.example.hotel_service.statistics.ReportType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
@@ -32,7 +31,10 @@ public class StatisticsController {
     @GetMapping("/export")
     public ResponseEntity<Resource> exportStatsToCsv(@RequestParam(required = false) Boolean update) {
         if (update != null && update) {
-            statisticsService.saveStatistics(filePath, ReportType.CSV);
+            if (!statisticsService.saveStatistics(filePath, ReportType.CSV)) {
+                //TODO Возможно другой ответ
+                return ResponseEntity.notFound().build();
+            }
         }
 
         File file = new File(filePath);

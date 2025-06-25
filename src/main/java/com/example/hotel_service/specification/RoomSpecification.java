@@ -11,6 +11,19 @@ import java.util.UUID;
 
 public class RoomSpecification {
 
+    public static Specification<Room> createSpecification(String id, String name, String hotelId,
+                                                          Double minPrice, Double maxPrice, Integer maxPeopleCount,
+                                                          LocalDate checkInDate, LocalDate checkOutDate) {
+        UUID uuid = id == null ? null : UUID.fromString(id);
+        UUID uuidHotel = hotelId == null ? null : UUID.fromString(hotelId);
+        return Specification.where(RoomSpecification.hasId(uuid))
+                .and(RoomSpecification.hasName(name))
+                .and(RoomSpecification.hasHotelId(uuidHotel))
+                .and(RoomSpecification.hasPrice(minPrice, maxPrice))
+                .and(RoomSpecification.hasMaxPeopleCount(maxPeopleCount))
+                .and(RoomSpecification.isAvailableBetween(checkInDate, checkOutDate));
+    }
+
     public static Specification<Room> hasId(UUID id) {
         return (root, query, criteriaBuilder) ->
                 id == null ? null : criteriaBuilder.equal(root.get("id"), id);

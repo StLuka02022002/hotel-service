@@ -1,15 +1,14 @@
 package com.example.hotel_service.service.impl;
 
+import com.example.hotel_service.repository.EventRepository;
 import com.example.hotel_service.service.StatisticsService;
 import com.example.hotel_service.statistics.EventType;
 import com.example.hotel_service.statistics.ReportType;
-import com.example.hotel_service.statistics.event.Event;
 import com.example.hotel_service.statistics.event.EventDocument;
 import com.example.hotel_service.statistics.event.RoomBookedEvent;
 import com.example.hotel_service.statistics.event.UserRegisteredEvent;
 import com.example.hotel_service.statistics.report.csv.RoomBookedCsvReport;
 import com.example.hotel_service.statistics.report.csv.UserRegisterCsvReport;
-import com.example.hotel_service.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +34,7 @@ public class StatisticServiceImpl implements StatisticsService {
         return this.saveEvent(event, EventType.ROOM_BOOKED.name());
     }
 
-    private EventDocument saveEvent(Event event, String eventType) {
+    private EventDocument saveEvent(Object event, String eventType) {
         EventDocument document = EventDocument.builder()
                 .eventType(eventType)
                 .event(event)
@@ -56,8 +55,7 @@ public class StatisticServiceImpl implements StatisticsService {
 
         for (EventDocument event : events) {
             EventType eventType = EventType.valueOf(event.getEventType());
-            csv.append(event.getId()).append(",")
-                    .append(eventType).append(",")
+            csv.append(event.getId()).append(",").append(eventType).append(",")
                     .append(event.getTimestamp()).append("\n");
             switch (eventType) {
                 case ROOM_BOOKED ->
@@ -72,24 +70,9 @@ public class StatisticServiceImpl implements StatisticsService {
 
     @Override
     public boolean saveStatistics(String filePath, ReportType reportType) {
-        File file = new File(filePath);
-
-        File parentDir = file.getParentFile();
-        if (parentDir != null && !parentDir.exists()) {
-            if (!parentDir.mkdirs()) {
-                return false;
-            }
-        }
-
-        if (!file.exists()) {
-            try {
-                if (!file.createNewFile()) {
-                    return false;
-                }
-            } catch (IOException e) {
-                //e.printStackTrace();
-                return false;
-            }
+        File file = this.getFile(filePath);
+        if (file == null) {
+            return false;
         }
         try (FileOutputStream fileOutputStream = new FileOutputStream(file);
              BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
@@ -100,10 +83,31 @@ public class StatisticServiceImpl implements StatisticsService {
 
             writer.write(data);
             writer.flush();
-            return true;
         } catch (IOException e) {
-            //e.printStackTrace();
+            //TODO Написать в log или выкинуть ошибку
             return false;
         }
+        return true;
+    }
+
+    private File getFile(String filePath) {
+        File file = new File(filePath);
+
+        File parentDir = file.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            if (!parentDir.mkdirs()) {
+                return null;
+            }
+        }
+
+        try {
+            if (!file.exists() && !file.createNewFile()) {
+                return null;
+            }
+        } catch (IOException e) {
+            //TODO Написать в log или выкинуть ошибку
+            return null;
+        }
+        return file;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.hotel_service.statistics.event;
 
+import com.example.hotel_service.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,11 +17,21 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @TypeAlias("UserRegisteredEvent")
-public class UserRegisteredEvent implements Event{
+public class UserRegisteredEvent {
 
     private UUID eventId;
     private UUID id;
     private String username;
     private String email;
     private LocalDateTime timestamp;
+
+    public static UserRegisteredEvent of(User user) {
+        return UserRegisteredEvent.builder()
+                .eventId(UUID.randomUUID())
+                .id(user.getId())
+                .username(user.getName())
+                .email(user.getEmail())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 }

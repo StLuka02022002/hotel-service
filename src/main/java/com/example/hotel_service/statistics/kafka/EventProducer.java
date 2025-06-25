@@ -1,6 +1,5 @@
 package com.example.hotel_service.statistics.kafka;
 
-import com.example.hotel_service.statistics.event.Event;
 import com.example.hotel_service.statistics.event.RoomBookedEvent;
 import com.example.hotel_service.statistics.event.UserRegisteredEvent;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,7 @@ public class EventProducer {
     @Value("${kafka.topics.room-booked-topic}")
     private String roomBookedTopic;
 
-    private final KafkaTemplate<String, Event> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendUserRegisteredEvent(UserRegisteredEvent event) {
         kafkaTemplate.send(userRegisteredTopic, event);

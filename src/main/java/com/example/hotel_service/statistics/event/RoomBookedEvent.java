@@ -1,5 +1,6 @@
 package com.example.hotel_service.statistics.event;
 
+import com.example.hotel_service.entity.Booking;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @TypeAlias("RoomBookedEvent")
-public class RoomBookedEvent implements Event {
+public class RoomBookedEvent {
 
     private UUID eventId;
     private UUID userId;
@@ -25,4 +26,15 @@ public class RoomBookedEvent implements Event {
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private LocalDateTime timestamp;
+
+    public static RoomBookedEvent of(Booking booking) {
+        return RoomBookedEvent.builder()
+                .eventId(UUID.randomUUID())
+                .id(booking.getRoom().getId())
+                .userId(booking.getUser().getId())
+                .checkInDate(booking.getCheckInDate())
+                .checkOutDate(booking.getCheckOutDate())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 }

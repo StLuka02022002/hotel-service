@@ -1,7 +1,7 @@
 package com.example.hotel_service.mapper;
 
-import com.example.hotel_service.dao.request.RoomRequest;
-import com.example.hotel_service.dao.responce.RoomResponse;
+import com.example.hotel_service.dto.request.RoomRequest;
+import com.example.hotel_service.dto.responce.RoomResponse;
 import com.example.hotel_service.entity.Room;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

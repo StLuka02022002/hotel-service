@@ -5,7 +5,24 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
-public interface HotelService extends BaseService<Hotel> {
+import java.util.List;
+import java.util.UUID;
+
+public interface HotelService {
+
+    Page<Hotel> getAll(int page, int size);
+
+    List<Hotel> getAll();
+
+    Hotel get(UUID id);
+
+    Hotel save(Hotel t);
+
+    Hotel update(UUID id, Hotel t);
+
+    void delete(UUID id);
+
+    boolean exists(UUID id);
 
     Hotel ratingRemake(Hotel hotel, Integer newMaker);
 
