@@ -1,5 +1,6 @@
 package com.example.hotel_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -43,11 +44,14 @@ public class Room {
     @Column(name = "max_people_count", nullable = false)
     private Integer maxPeopleCount;
 
+    @JsonIgnore
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", nullable = false)
     private Hotel hotel;
 
     @Builder.Default
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<Booking> bookings = new ArrayList<>();
 }

@@ -1,5 +1,6 @@
 package com.example.hotel_service.service.impl;
 
+import com.example.hotel_service.aop.Log;
 import com.example.hotel_service.repository.EventRepository;
 import com.example.hotel_service.service.StatisticsService;
 import com.example.hotel_service.statistics.EventType;
@@ -10,6 +11,7 @@ import com.example.hotel_service.statistics.event.UserRegisteredEvent;
 import com.example.hotel_service.statistics.report.csv.RoomBookedCsvReport;
 import com.example.hotel_service.statistics.report.csv.UserRegisterCsvReport;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StatisticServiceImpl implements StatisticsService {
@@ -29,6 +32,7 @@ public class StatisticServiceImpl implements StatisticsService {
     private String filePath;
 
     @Override
+    @Log(message = "statistic")
     public File exportStatsToCsv(Boolean update) {
         if (update != null && update) {
             if (!this.saveStatistics(filePath, ReportType.CSV)) {
@@ -109,7 +113,7 @@ public class StatisticServiceImpl implements StatisticsService {
             writer.write(data);
             writer.flush();
         } catch (IOException e) {
-            //TODO Написать в log или выкинуть ошибку
+            log.error("Couldn't create a file with statistics: {}", e.getMessage(), e);
             return false;
         }
         return true;
@@ -130,7 +134,7 @@ public class StatisticServiceImpl implements StatisticsService {
                 return null;
             }
         } catch (IOException e) {
-            //TODO Написать в log или выкинуть ошибку
+            log.error("Couldn't create a file with statistics: {}", e.getMessage(), e);
             return null;
         }
         return file;

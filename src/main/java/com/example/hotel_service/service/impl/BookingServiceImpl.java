@@ -8,6 +8,7 @@ import com.example.hotel_service.entity.Room;
 import com.example.hotel_service.entity.User;
 import com.example.hotel_service.exception.BookingNotFoundException;
 import com.example.hotel_service.exception.InvalidDateException;
+import com.example.hotel_service.exception.RoomBookedException;
 import com.example.hotel_service.mapper.BookingMapper;
 import com.example.hotel_service.repository.BookingRepository;
 import com.example.hotel_service.service.BookingService;
@@ -95,8 +96,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (repository.isRoomBooked(room, in, out)) {
-            //TODO сделать другую ошибку
-            throw new IllegalArgumentException("Room is booked");
+            throw new RoomBookedException(String.format("Room is booked from %s to %s", in, out));
         }
 
         Booking booking = Booking.builder()

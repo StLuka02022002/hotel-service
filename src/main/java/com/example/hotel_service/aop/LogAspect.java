@@ -73,7 +73,7 @@ public class LogAspect {
 
     private void logMessageResult(Object result, Log loggable) {
         if (isLogLevelEnabled(loggable.level()) && loggable.logResult()) {
-            logMessage(loggable.level(), "Результат: " + (result != null ? result.toString() : "null"));
+            logMessage(loggable.level(), "Результат: " + (result != null ? "successful" : "null"));
         }
     }
 

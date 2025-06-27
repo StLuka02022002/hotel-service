@@ -2,10 +2,7 @@ package com.example.hotel_service.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -95,6 +92,7 @@ public class Hotel {
     private LocalDateTime updatedTime;
 
     @Builder.Default
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
     private List<Room> rooms = new ArrayList<>();
 }

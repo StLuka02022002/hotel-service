@@ -5,6 +5,7 @@ import com.example.hotel_service.dto.responce.PaginatedResponse;
 import com.example.hotel_service.dto.responce.UserResponse;
 import com.example.hotel_service.dto.responce.UserResponseEdit;
 import com.example.hotel_service.entity.User;
+import com.example.hotel_service.exception.UserAlreadyExistsException;
 import com.example.hotel_service.exception.UserNotFoundException;
 import com.example.hotel_service.mapper.UserMapper;
 import com.example.hotel_service.repository.UserRepository;
@@ -113,8 +114,7 @@ public class UserServiceImpl implements UserService {
     public User createNewUser(User user) {
         if (this.existByUsername(user.getName()) ||
                 this.existByEmail(user.getEmail())) {
-            //TODO поменять ошибку
-            throw new UserNotFoundException("User exists");
+            throw new UserAlreadyExistsException("User already exists");
         }
         return repository.save(user);
     }
