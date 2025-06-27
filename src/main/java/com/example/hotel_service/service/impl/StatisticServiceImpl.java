@@ -10,6 +10,7 @@ import com.example.hotel_service.statistics.event.UserRegisteredEvent;
 import com.example.hotel_service.statistics.report.csv.RoomBookedCsvReport;
 import com.example.hotel_service.statistics.report.csv.UserRegisterCsvReport;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -23,6 +24,30 @@ public class StatisticServiceImpl implements StatisticsService {
     private final EventRepository repository;
     private final UserRegisterCsvReport userRegisterCsvReport;
     private final RoomBookedCsvReport roomBookedCsvReport;
+
+    @Value("${file.path.csv}")
+    private String filePath;
+
+    @Override
+    public File exportStatsToCsv(Boolean update) {
+        if (update != null && update) {
+            if (!this.saveStatistics(filePath, ReportType.CSV)) {
+                return null;
+            }
+        }
+
+        File file = new File(filePath);
+
+        if (!file.exists() || !file.canRead()) {
+            return null;
+        }
+
+        if (!file.isFile()) {
+            return null;
+        }
+
+        return file;
+    }
 
     @Override
     public EventDocument saveUserRegisteredEvent(UserRegisteredEvent event) {

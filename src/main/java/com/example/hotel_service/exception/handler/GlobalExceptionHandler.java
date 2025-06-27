@@ -2,6 +2,7 @@ package com.example.hotel_service.exception.handler;
 
 import com.example.hotel_service.dto.ErrorMessage;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -27,8 +29,7 @@ public class GlobalExceptionHandler {
         Map<String, String> validationErrors = new HashMap<>();
         ex.getBindingResult().getFieldErrors()
                 .forEach(error -> validationErrors.put(error.getField(), error.getDefaultMessage()));
-        //TODO Перенести в лог
-        ex.printStackTrace();
+        log.error("Ошибка: {}", ex.getMessage(), ex);
         errors.put("errors", validationErrors);
         return errors;
     }
@@ -42,8 +43,7 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false)
         );
-        //TODO Перенести в лог
-        ex.printStackTrace();
+        log.error("Ошибка: {}", ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -56,8 +56,7 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false)
         );
-        //TODO Перенести в лог
-        ex.printStackTrace();
+        log.error("Ошибка: {}", ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
@@ -70,8 +69,7 @@ public class GlobalExceptionHandler {
                 "Произошла внутренняя ошибка",
                 request.getDescription(false)
         );
-        //TODO Перенести в лог
-        ex.printStackTrace();
+        log.error("Ошибка: {}", ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

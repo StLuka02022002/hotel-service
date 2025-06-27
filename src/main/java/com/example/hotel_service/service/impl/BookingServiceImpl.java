@@ -1,12 +1,19 @@
 package com.example.hotel_service.service.impl;
 
+import com.example.hotel_service.dto.request.BookingRequest;
+import com.example.hotel_service.dto.responce.BookingResponse;
+import com.example.hotel_service.dto.responce.PaginatedResponse;
 import com.example.hotel_service.entity.Booking;
 import com.example.hotel_service.entity.Room;
 import com.example.hotel_service.entity.User;
 import com.example.hotel_service.exception.BookingNotFoundException;
 import com.example.hotel_service.exception.InvalidDateException;
+import com.example.hotel_service.mapper.BookingMapper;
 import com.example.hotel_service.repository.BookingRepository;
 import com.example.hotel_service.service.BookingService;
+import com.example.hotel_service.service.RoomService;
+import com.example.hotel_service.statistics.event.RoomBookedEvent;
+import com.example.hotel_service.statistics.kafka.EventProducer;
 import com.example.hotel_service.util.DateUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,15 +30,29 @@ import java.util.UUID;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository repository;
+    private final BookingMapper bookingMapper;
+    private final RoomService roomService;
+    private final EventProducer producer;
 
     @Override
-    public Page<Booking> getAll(int page, int size) {
-        return repository.findAll(PageRequest.of(page, size));
+    public PaginatedResponse<BookingResponse> getAll(int page, int size) {
+        Page<Booking> bookingPage = repository.findAll(PageRequest.of(page, size));
+        return PaginatedResponse.of(bookingPage, bookingMapper::bookingToBookingResponse);
     }
 
     @Override
     public List<Booking> getAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public BookingResponse book(BookingRequest request, User user) {
+        Room room = roomService.get(UUID.fromString(request.getRoomId()));
+        Booking booking = this.book(room, user,
+                request.getCheckInDate(), request.getCheckOutDate());
+        RoomBookedEvent event = RoomBookedEvent.of(booking);
+        producer.sendRoomBookedEvent(event);
+        return bookingMapper.bookingToBookingResponse(booking);
     }
 
     @Override
@@ -46,7 +67,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking update(UUID id, Booking room) {
-        //TODO может не стоит так делать
         if (!this.exists(id)) {
             throw this.getException(id);
         }
@@ -56,7 +76,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public void delete(UUID id) {
-        //TODO может не стоит так делать
         if (exists(id)) {
             repository.deleteById(id);
         } else {

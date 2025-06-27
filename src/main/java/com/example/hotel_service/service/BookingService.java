@@ -1,18 +1,23 @@
 package com.example.hotel_service.service;
 
+import com.example.hotel_service.dto.request.BookingRequest;
+import com.example.hotel_service.dto.responce.BookingResponse;
+import com.example.hotel_service.dto.responce.PaginatedResponse;
 import com.example.hotel_service.entity.Booking;
 import com.example.hotel_service.entity.Room;
 import com.example.hotel_service.entity.User;
-import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 public interface BookingService {
-    Page<Booking> getAll(int page, int size);
+
+    PaginatedResponse<BookingResponse> getAll(int page, int size);
 
     List<Booking> getAll();
+
+    BookingResponse book(BookingRequest request, User user);
 
     Booking get(UUID id);
 

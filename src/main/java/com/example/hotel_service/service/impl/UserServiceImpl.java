@@ -1,9 +1,17 @@
 package com.example.hotel_service.service.impl;
 
+import com.example.hotel_service.dto.request.UserRequest;
+import com.example.hotel_service.dto.responce.PaginatedResponse;
+import com.example.hotel_service.dto.responce.UserResponse;
+import com.example.hotel_service.dto.responce.UserResponseEdit;
 import com.example.hotel_service.entity.User;
 import com.example.hotel_service.exception.UserNotFoundException;
+import com.example.hotel_service.mapper.UserMapper;
 import com.example.hotel_service.repository.UserRepository;
 import com.example.hotel_service.service.UserService;
+import com.example.hotel_service.statistics.event.UserRegisteredEvent;
+import com.example.hotel_service.statistics.kafka.EventProducer;
+import com.example.hotel_service.util.UUIDUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,10 +28,20 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
+    private final EventProducer producer;
+    private final UserMapper userMapper;
 
     @Override
-    public Page<User> getAll(int page, int size) {
-        return repository.findAll(PageRequest.of(page, size));
+    public UserResponse get(String id) {
+        UUID uuid = UUIDUtil.fromString(id);
+        User user = this.get(uuid);
+        return userMapper.userToUserResponse(user);
+    }
+
+    @Override
+    public PaginatedResponse<UserResponse> getAll(int page, int size) {
+        Page<User> userPage = repository.findAll(PageRequest.of(page, size));
+        return PaginatedResponse.of(userPage, userMapper::userToUserResponse);
     }
 
     @Override
@@ -37,13 +55,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponseEdit save(UserRequest userRequest) {
+        User user = this.createNewUser(userMapper.userRequestToUser(userRequest));
+        UserRegisteredEvent event = UserRegisteredEvent.of(user);
+        producer.sendUserRegisteredEvent(event);
+        return userMapper.userToUserResponseEdit(user);
+    }
+
+    @Override
     public User save(User t) {
         return repository.save(t);
     }
 
     @Override
+    public UserResponseEdit update(String id, UserRequest userRequest) {
+        UUID uuid = UUIDUtil.fromString(id);
+        User user = this.update(uuid,
+                userMapper.userRequestToUser(userRequest));
+        return userMapper.userToUserResponseEdit(user);
+    }
+
+    @Override
     public User update(UUID id, User t) {
-        //TODO может не стоит так делать
         if (!this.exists(id)) {
             throw this.getException(id);
         }
@@ -52,8 +85,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void delete(String id) {
+        UUID uuid = UUIDUtil.fromString(id);
+        this.delete(uuid);
+    }
+
+    @Override
     public void delete(UUID id) {
-        //TODO может не стоит так делать
         if (exists(id)) {
             repository.deleteById(id);
         } else {
